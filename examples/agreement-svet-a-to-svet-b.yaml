@@ -1,0 +1,35 @@
+federation_agreement:
+  peer: svet-b.example.org
+  peer_key: "ed25519:MCowBQYDK2VwAyEA8yN0LZ3oQ1x2Wk7Ffw3pW0dQm9S4cXbOEXAMPLEKEY="
+  protocol: ">=1.0 <2.0"
+  ruleset: "core-rules@1.0"
+  valid_until: 2027-10-04
+
+  portals:
+    - id: brana-sever
+      local_location: { h3: "8a1fb46622dffff" }
+      capacity_per_hour: 200
+      max_cargo_items: 40
+
+  import:
+    avatar: true
+    cosmetics: true
+    skills: map
+    items:
+      allow_categories: [raw_material, tool, food]
+      deny_categories: [currency, legendary]
+      daily_limit_per_player: 50
+    currency: exchange
+
+  export:
+    items:
+      deny_categories: [quest_item]
+
+  exchange:
+    rate_source: market
+    daily_cap: 10000
+
+  on_termination:
+    foreign_items: return_home
+    guests: return_home
+    grace_period: 7d

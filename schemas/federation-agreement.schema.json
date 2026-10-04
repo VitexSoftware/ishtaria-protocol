@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://vitexsoftware.github.io/ishtaria-protocol/schemas/federation-agreement.schema.json",
+  "title": "Ishtaria federation agreement",
+  "description": "One side's configuration of a bilateral agreement between two Ishtaria worlds. Each side keeps its own copy; policies need not be symmetric.",
+  "type": "object",
+  "required": ["federation_agreement"],
+  "additionalProperties": false,
+  "properties": {
+    "federation_agreement": {
+      "type": "object",
+      "required": ["peer", "peer_key", "protocol", "ruleset", "portals", "import", "export", "on_termination"],
+      "additionalProperties": false,
+      "properties": {
+        "peer": { "$ref": "#/$defs/server_name" },
+        "peer_key": {
+          "type": "string",
+          "pattern": "^ed25519:[A-Za-z0-9+/=_-]{32,}$",
+          "description": "Peer's server signing key, verified out of band (fingerprint)."
+        },
+        "protocol": { "type": "string", "description": "Semver range of the federation protocol, e.g. \">=1.0 <2.0\"." },
+        "ruleset": { "type": "string", "pattern": "^[a-z0-9-]+@[0-9]+\\.[0-9]+$" },
+        "valid_until": { "type": "string", "format": "date" },
+        "portals": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["id", "local_location"],
+            "additionalProperties": false,
+            "properties": {
+              "id": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+              "local_location": {
+                "type": "object",
+                "required": ["h3"],
+                "properties": { "h3": { "type": "string", "pattern": "^[0-9a-f]{15}$" } }
+              },
+              "capacity_per_hour": { "type": "integer", "minimum": 1 },
+              "max_cargo_items": { "type": "integer", "minimum": 0 }
+            }
+          }
+        },
+        "import": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "avatar": { "type": "boolean", "default": true },
+            "cosmetics": { "type": "boolean", "default": true },
+            "skills": { "enum": ["map", "reset", "keep"], "default": "reset" },
+            "items": { "$ref": "#/$defs/item_policy" },
+            "currency": { "enum": ["exchange", "deny"], "default": "deny" }
+          }
+        },
+        "export": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": { "items": { "$ref": "#/$defs/item_policy" } }
+        },
+        "exchange": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "rate_source": { "enum": ["market", "fixed"] },
+            "fixed_rate": { "type": "number", "exclusiveMinimum": 0 },
+            "daily_cap": { "type": "integer", "minimum": 0 }
+          }
+        },
+        "on_termination": {
+          "type": "object",
+          "required": ["foreign_items", "guests", "grace_period"],
+          "additionalProperties": false,
+          "properties": {
+            "foreign_items": { "enum": ["return_home", "freeze", "convert"] },
+            "guests": { "enum": ["return_home"] },
+            "grace_period": { "type": "string", "pattern": "^[0-9]+[hd]$" }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "server_name": {
+      "type": "string",
+      "pattern": "^([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)(\\.[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)+$"
+    },
+    "category": {
+      "enum": ["raw_material", "food", "tool", "weapon", "clothing", "cosmetic", "building", "currency", "quest_item", "legendary"]
+    },
+    "item_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "allow_categories": { "type": "array", "items": { "$ref": "#/$defs/category" }, "uniqueItems": true },
+        "deny_categories": { "type": "array", "items": { "$ref": "#/$defs/category" }, "uniqueItems": true },
+        "daily_limit_per_player": { "type": "integer", "minimum": 0 }
+      }
+    }
+  }
+}

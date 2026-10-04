@@ -1,0 +1,15 @@
+Source: ishtaria-protocol
+Section: games
+Priority: optional
+Maintainer: Vítězslav Dvořák <cybervitexus@gmail.com>
+Build-Depends: debhelper-compat (= 13), python3, python3-jsonschema, python3-yaml
+Standards-Version: 4.7.0
+Homepage: https://github.com/VitexSoftware/ishtaria-protocol
+Rules-Requires-Root: no
+
+Package: ishtaria-protocol
+Architecture: all
+Depends: ${misc:Depends}
+Description: Ishtaria federation protocol schemas
+ JSON Schema of federation agreements and CDDL of signed travel tickets
+ used when players move between federated Ishtaria worlds.

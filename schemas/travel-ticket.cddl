@@ -1,0 +1,42 @@
+; Ishtaria travel ticket, protocol version 1.
+; Encoded as CBOR and wrapped in COSE_Sign1 (RFC 9052), signed with the
+; issuing (home or currently hosting) server's Ed25519 key.
+; Valid at most 300 s, single-use (nonce), consumed by a two-phase handover.
+
+travel-ticket = {
+  v:        1,
+  id:       uuid,              ; UUIDv7 of the ticket
+  player:   player-id,
+  from:     server-name,
+  to:       server-name,
+  portal:   tstr,
+  issued:   uint,              ; unix seconds
+  expires:  uint,
+  avatar:   avatar,
+  ? skills: { * tstr => uint },
+  items:    [* item],
+  nonce:    bstr .size 16,
+}
+
+avatar = {
+  vrm: content-hash,           ; VRM 1.0 / glTF binary
+  url: tstr,                   ; where the target may fetch it
+}
+
+item = {
+  id:         item-id,
+  kind:       tstr,            ; "core:iron_axe", "svet-a:dragon_axe"
+  category:   category,
+  ? durability: float,
+  ? fallback: tstr,            ; core kind for worlds that lack `kind`
+  provenance: [+ bstr],        ; COSE signatures, origin first
+}
+
+category = "raw_material" / "food" / "tool" / "weapon" / "clothing" /
+           "cosmetic" / "building" / "currency" / "quest_item" / "legendary"
+
+uuid         = #6.37(bstr .size 16)
+player-id    = tstr .regexp "@[a-z0-9._-]+:[a-z0-9.-]+"
+server-name  = tstr .regexp "[a-z0-9.-]+"
+item-id      = tstr            ; "<server-name>/<uuidv7>"
+content-hash = tstr .regexp "sha256:[0-9a-f]{64}"
