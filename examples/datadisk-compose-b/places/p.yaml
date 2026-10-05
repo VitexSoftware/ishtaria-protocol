@@ -1,0 +1,1 @@
+- {id: shrine, kind: landmark, name_key: place.shrine, requires: {near: [{place: "base:hut", min_m: 100, max_m: 800}]}}

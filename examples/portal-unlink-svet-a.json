@@ -1,0 +1,11 @@
+{
+  "v": 1,
+  "type": "portal-unlink",
+  "from_world": "svet-a.example.org",
+  "from_api_url": "https://svet-a.example.org:7400",
+  "from_portal": "0192f3a1-5b1e-7c3a-9d4e-1a2b3c4d5e6f",
+  "to_world": "svet-b.example.org",
+  "to_portal": "1192f3a1-5b1e-7c3a-9d4e-1a2b3c4d5e6f",
+  "issued": 1791136100,
+  "expires": 1791136400
+}

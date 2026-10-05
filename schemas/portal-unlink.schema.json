@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://vitexsoftware.github.io/ishtaria-protocol/schemas/portal-unlink.schema.json",
+  "title": "Portal unlink payload",
+  "description": "Sent as {\"message\": \"<payload>.<signature>\"} to POST /federation/portals/unlink when the owner of one end breaks a link (or closes the portal). Ed25519 over 'ishtaria/portal-unlink/v1' + 0x00 + the decoded payload. Only the world the portal is linked with can release it; the message is repeated until delivered and repeating it changes nothing.",
+  "type": "object",
+  "required": [
+    "v",
+    "type",
+    "from_world",
+    "from_api_url",
+    "from_portal",
+    "to_world",
+    "to_portal",
+    "issued",
+    "expires"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "v": {
+      "const": 1
+    },
+    "type": {
+      "const": "portal-unlink"
+    },
+    "from_world": {
+      "type": "string",
+      "pattern": "^[a-z0-9]([a-z0-9.-]{0,251}[a-z0-9])?$"
+    },
+    "from_api_url": {
+      "type": "string",
+      "pattern": "^https?://[^\\s/?#@\\\\]+(/[^\\s?#@\\\\]*)?$",
+      "maxLength": 300
+    },
+    "from_portal": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "to_world": {
+      "type": "string",
+      "pattern": "^[a-z0-9]([a-z0-9.-]{0,251}[a-z0-9])?$"
+    },
+    "to_portal": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "issued": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "expires": {
+      "type": "integer",
+      "minimum": 0
+    }
+  }
+}

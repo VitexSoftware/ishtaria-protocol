@@ -1,0 +1,9 @@
+id: extension
+version: 1.0.0
+name: Extension example
+requires_ruleset: "1"
+license: CC0-1.0
+attribution: Example disk.
+languages: [en]
+requires:
+  - {disk: base, version: 1.0.0}

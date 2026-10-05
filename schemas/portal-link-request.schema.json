@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://vitexsoftware.github.io/ishtaria-protocol/schemas/portal-link-request.schema.json",
+  "title": "Portal link request payload",
+  "description": "Sent as {\"message\": \"<payload>.<signature>\"} to POST /federation/portals/link by the world where a share link was pasted. Ed25519 over 'ishtaria/portal-link-request/v1' + 0x00 + the decoded payload. The receiver checks the signature, fetches GET /federation/portals/{from_portal} from the sender to see that the portal stands there and is finished, applies its operator policy and answers {\"state\": \"open\"|\"pending\"}. Repeating a request after the link was made answers the current state.",
+  "type": "object",
+  "required": [
+    "v",
+    "type",
+    "from_world",
+    "from_api_url",
+    "from_portal",
+    "from_name",
+    "to_world",
+    "to_portal",
+    "issued",
+    "expires"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "v": {
+      "const": 1
+    },
+    "type": {
+      "const": "portal-link-request"
+    },
+    "from_world": {
+      "type": "string",
+      "pattern": "^[a-z0-9]([a-z0-9.-]{0,251}[a-z0-9])?$"
+    },
+    "from_api_url": {
+      "type": "string",
+      "pattern": "^https?://[^\\s/?#@\\\\]+(/[^\\s?#@\\\\]*)?$",
+      "maxLength": 300
+    },
+    "from_portal": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "from_name": {
+      "type": "string",
+      "pattern": "^[a-z0-9-]{1,64}$"
+    },
+    "to_world": {
+      "type": "string",
+      "pattern": "^[a-z0-9]([a-z0-9.-]{0,251}[a-z0-9])?$"
+    },
+    "to_portal": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "issued": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "expires": {
+      "type": "integer",
+      "minimum": 0
+    }
+  }
+}

@@ -1,0 +1,754 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://vitexsoftware.github.io/ishtaria-protocol/datadisk.schema.json",
+  "title": "Ishtaria datadisk",
+  "description": "Definitions for the files of a story datadisk. A datadisk directory holds datadisk.yaml (manifest), places/*.yaml, npcs/*.yaml, dialogues/*.yaml, quests/*.yaml, lore/*.yaml and i18n/<language>.yaml. Each file is validated against the definition named by its directory; $defs/manifest validates datadisk.yaml.",
+  "$defs": {
+    "local_id": {
+      "description": "Identifier unique inside one datadisk; the loader qualifies it as <disk>:<id>.",
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]{0,47}$"
+    },
+    "ref": {
+      "description": "Reference to a local id, or to <disk>:<id> of a declared dependency.",
+      "type": "string",
+      "pattern": "^([a-z][a-z0-9_]{1,31}:)?[a-z][a-z0-9_]{0,47}$"
+    },
+    "text_key": {
+      "description": "Translation key; the text lives in i18n/<language>.yaml.",
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_.]{0,95}$"
+    },
+    "item_id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]{0,63}$"
+    },
+    "status": {
+      "description": "draft = generated and not yet reviewed; release builds reject drafts.",
+      "enum": [
+        "draft",
+        "reviewed"
+      ]
+    },
+    "manifest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "version",
+        "name",
+        "requires_ruleset",
+        "license",
+        "attribution"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]{1,31}$"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 1000
+        },
+        "requires_ruleset": {
+          "type": "string",
+          "pattern": "^[0-9]+$"
+        },
+        "license": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "attribution": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "rating": {
+          "enum": [
+            "general",
+            "teen",
+            "mature"
+          ]
+        },
+        "languages": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z]{2}$"
+          }
+        },
+        "requires": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "disk",
+              "version"
+            ],
+            "properties": {
+              "disk": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9_]{1,31}$"
+              },
+              "version": {
+                "type": "string",
+                "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
+                "description": "Minimum version, same major."
+              }
+            }
+          }
+        },
+        "conflicts": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]{1,31}$"
+          }
+        }
+      }
+    },
+    "condition": {
+      "description": "Structured condition. No scripting: exactly one key.",
+      "type": "object",
+      "minProperties": 1,
+      "maxProperties": 1,
+      "properties": {
+        "all": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/condition"
+          }
+        },
+        "any": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/condition"
+          }
+        },
+        "not": {
+          "$ref": "#/$defs/condition"
+        },
+        "flag": {
+          "$ref": "#/$defs/ref"
+        },
+        "quest_stage": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "quest",
+            "stage"
+          ],
+          "properties": {
+            "quest": {
+              "$ref": "#/$defs/ref"
+            },
+            "stage": {
+              "$ref": "#/$defs/local_id"
+            }
+          }
+        },
+        "has_item": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "item"
+          ],
+          "properties": {
+            "item": {
+              "$ref": "#/$defs/item_id"
+            },
+            "qty": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000000
+            }
+          }
+        },
+        "gold_at_least": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000
+        }
+      },
+      "additionalProperties": false
+    },
+    "effect": {
+      "description": "Structured effect applied by the server in one transaction.",
+      "type": "object",
+      "minProperties": 1,
+      "maxProperties": 1,
+      "properties": {
+        "give_item": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "item"
+          ],
+          "properties": {
+            "item": {
+              "$ref": "#/$defs/item_id"
+            },
+            "qty": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000000
+            }
+          }
+        },
+        "take_item": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "item"
+          ],
+          "properties": {
+            "item": {
+              "$ref": "#/$defs/item_id"
+            },
+            "qty": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000000
+            }
+          }
+        },
+        "gold": {
+          "type": "integer",
+          "minimum": -1000000000,
+          "maximum": 1000000000,
+          "not": {
+            "const": 0
+          }
+        },
+        "set_flag": {
+          "$ref": "#/$defs/ref"
+        },
+        "set_stage": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "quest",
+            "stage"
+          ],
+          "properties": {
+            "quest": {
+              "$ref": "#/$defs/ref"
+            },
+            "stage": {
+              "$ref": "#/$defs/local_id"
+            }
+          }
+        },
+        "once": {
+          "description": "Apply the nested effects only the first time this key is used by a player.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "key",
+            "effects"
+          ],
+          "properties": {
+            "key": {
+              "$ref": "#/$defs/local_id"
+            },
+            "effects": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "$ref": "#/$defs/effect"
+              }
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "places": {
+      "description": "places/*.yaml: a list of anchors the world generator must find a spot for.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "kind",
+          "name_key"
+        ],
+        "properties": {
+          "id": {
+            "$ref": "#/$defs/local_id"
+          },
+          "kind": {
+            "enum": [
+              "city",
+              "building",
+              "graveyard",
+              "landmark",
+              "camp"
+            ]
+          },
+          "name_key": {
+            "$ref": "#/$defs/text_key"
+          },
+          "parent": {
+            "$ref": "#/$defs/ref",
+            "description": "The place this one stands inside or beside; placed after it, within radius_m."
+          },
+          "radius_m": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "maximum": 2000
+          },
+          "requires": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "biome": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string"
+                }
+              },
+              "height_m": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "min": {
+                    "type": "number"
+                  },
+                  "max": {
+                    "type": "number"
+                  }
+                }
+              },
+              "max_slope_deg": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 90
+              },
+              "near": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "place",
+                    "min_m",
+                    "max_m"
+                  ],
+                  "properties": {
+                    "place": {
+                      "$ref": "#/$defs/ref"
+                    },
+                    "min_m": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "max_m": {
+                      "type": "number",
+                      "exclusiveMinimum": 0
+                    }
+                  }
+                }
+              },
+              "coast": {
+                "type": "boolean"
+              }
+            }
+          },
+          "spacing_m": {
+            "type": "number",
+            "minimum": 10,
+            "maximum": 1000000
+          },
+          "scenery": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "preset"
+            ],
+            "properties": {
+              "preset": {
+                "enum": [
+                  "town",
+                  "graveyard"
+                ]
+              },
+              "size": {
+                "enum": [
+                  "hamlet",
+                  "village",
+                  "town"
+                ]
+              }
+            }
+          },
+          "spawn": {
+            "type": "boolean",
+            "description": "New characters of the world appear here. At most one place of a disk; with several disks the first one in the order of application wins."
+          }
+        }
+      }
+    },
+    "npcs": {
+      "description": "npcs/*.yaml: characters standing at a place.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "name_key",
+          "place",
+          "character",
+          "dialogue"
+        ],
+        "properties": {
+          "id": {
+            "$ref": "#/$defs/local_id"
+          },
+          "name_key": {
+            "$ref": "#/$defs/text_key"
+          },
+          "place": {
+            "$ref": "#/$defs/ref"
+          },
+          "character": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "pack",
+              "skin"
+            ],
+            "properties": {
+              "pack": {
+                "enum": [
+                  "protagonists",
+                  "retro",
+                  "survivors"
+                ]
+              },
+              "skin": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9_-]{1,48}$"
+              }
+            }
+          },
+          "dialogue": {
+            "$ref": "#/$defs/ref"
+          },
+          "bio_key": {
+            "$ref": "#/$defs/text_key"
+          },
+          "tags": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "$ref": "#/$defs/local_id"
+            }
+          },
+          "portrait": {
+            "$ref": "#/$defs/media_path"
+          }
+        }
+      }
+    },
+    "dialogue": {
+      "description": "dialogues/<name>.yaml: one decision tree.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "start",
+        "nodes"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/local_id"
+        },
+        "status": {
+          "$ref": "#/$defs/status"
+        },
+        "generated_by": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "start": {
+          "$ref": "#/$defs/local_id"
+        },
+        "nodes": {
+          "type": "object",
+          "minProperties": 1,
+          "maxProperties": 200,
+          "propertyNames": {
+            "$ref": "#/$defs/local_id"
+          },
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "text_key": {
+                "$ref": "#/$defs/text_key"
+              },
+              "branch": {
+                "description": "Automatic routing: the first entry whose condition holds (or has none) is taken; the node shows no text.",
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "goto"
+                  ],
+                  "properties": {
+                    "if": {
+                      "$ref": "#/$defs/condition"
+                    },
+                    "goto": {
+                      "$ref": "#/$defs/local_id"
+                    }
+                  }
+                }
+              },
+              "choices": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 8,
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "text_key"
+                  ],
+                  "properties": {
+                    "text_key": {
+                      "$ref": "#/$defs/text_key"
+                    },
+                    "if": {
+                      "$ref": "#/$defs/condition"
+                    },
+                    "effects": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/$defs/effect"
+                      }
+                    },
+                    "goto": {
+                      "$ref": "#/$defs/local_id",
+                      "description": "Next node; omitted ends the conversation."
+                    }
+                  }
+                }
+              },
+              "effects": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/effect"
+                }
+              }
+            },
+            "oneOf": [
+              {
+                "required": [
+                  "branch"
+                ],
+                "not": {
+                  "anyOf": [
+                    {
+                      "required": [
+                        "text_key"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "choices"
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "required": [
+                  "text_key"
+                ],
+                "not": {
+                  "required": [
+                    "branch"
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        "music": {
+          "$ref": "#/$defs/local_id",
+          "description": "Track from music/*.yaml played during the conversation."
+        }
+      }
+    },
+    "quest": {
+      "description": "quests/<name>.yaml: a scenario as a state machine; stages are advanced by dialogue effects.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "title_key",
+        "start_stage",
+        "stages"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/local_id"
+        },
+        "title_key": {
+          "$ref": "#/$defs/text_key"
+        },
+        "start_stage": {
+          "$ref": "#/$defs/local_id"
+        },
+        "stages": {
+          "type": "object",
+          "minProperties": 1,
+          "maxProperties": 64,
+          "propertyNames": {
+            "$ref": "#/$defs/local_id"
+          },
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "text_key"
+            ],
+            "properties": {
+              "text_key": {
+                "$ref": "#/$defs/text_key"
+              },
+              "final": {
+                "type": "boolean"
+              },
+              "reach": {
+                "description": "Moves the quest to stage `goto` when the player comes within radius_m of the place.",
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "place",
+                  "radius_m",
+                  "goto"
+                ],
+                "properties": {
+                  "place": {
+                    "$ref": "#/$defs/ref"
+                  },
+                  "radius_m": {
+                    "type": "number",
+                    "minimum": 5,
+                    "maximum": 2000
+                  },
+                  "goto": {
+                    "$ref": "#/$defs/local_id"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "lore": {
+      "description": "lore/*.yaml: codex entries (gods, traditions); never spawned.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "title_key",
+          "text_key"
+        ],
+        "properties": {
+          "id": {
+            "$ref": "#/$defs/local_id"
+          },
+          "category": {
+            "enum": [
+              "god",
+              "primordial",
+              "tradition",
+              "place",
+              "history",
+              "artifact",
+              "concept"
+            ]
+          },
+          "title_key": {
+            "$ref": "#/$defs/text_key"
+          },
+          "text_key": {
+            "$ref": "#/$defs/text_key"
+          }
+        }
+      }
+    },
+    "strings": {
+      "description": "i18n/<language>.yaml: flat map of text keys to text (at most 2000 characters each).",
+      "type": "object",
+      "propertyNames": {
+        "$ref": "#/$defs/text_key"
+      },
+      "additionalProperties": {
+        "type": "string",
+        "maxLength": 2000
+      }
+    },
+    "media_path": {
+      "description": "Path of a file inside the datadisk, below media/ (png, jpg or ogg).",
+      "type": "string",
+      "pattern": "^media/[a-z0-9_]+(/[a-z0-9_]+)*/[a-z0-9_.-]+\\.(png|jpg|ogg)$"
+    },
+    "music": {
+      "description": "music/*.yaml: tracks (OGG Vorbis) a dialogue can play.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "file",
+          "title_key"
+        ],
+        "properties": {
+          "id": {
+            "$ref": "#/$defs/local_id"
+          },
+          "file": {
+            "$ref": "#/$defs/media_path"
+          },
+          "title_key": {
+            "$ref": "#/$defs/text_key"
+          },
+          "loop": {
+            "type": "boolean"
+          }
+        }
+      }
+    }
+  }
+}

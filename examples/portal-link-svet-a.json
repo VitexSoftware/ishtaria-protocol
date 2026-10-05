@@ -1,0 +1,9 @@
+{
+  "v": 1,
+  "type": "portal-link",
+  "portal": "0192f3a1-5b1e-7c3a-9d4e-1a2b3c4d5e6f",
+  "name": "brana-sever",
+  "world": "svet-a.example.org",
+  "api_url": "https://svet-a.example.org:7400",
+  "issued": 1791135600
+}

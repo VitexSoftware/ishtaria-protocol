@@ -37,9 +37,9 @@ for path in sorted((root / "examples").glob("agreement-*.yaml")):
         print(f"{path.name}: OK")
 for prefix, schema_name in [
     ("server-info-", "server-info"),
-    ("portal-invitation-", "portal-invitation"),
-    ("portal-pact-accept-", "portal-pact-accept"),
-    ("portal-pact-status-", "portal-pact-status"),
+    ("portal-link-request-", "portal-link-request"),
+    ("portal-link-svet", "portal-link"),
+    ("portal-unlink-", "portal-unlink"),
 ]:
     json_schema = json.loads((root / f"schemas/{schema_name}.schema.json").read_text())
     json_validator = jsonschema.Draft202012Validator(

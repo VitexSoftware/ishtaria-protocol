@@ -7,13 +7,15 @@ Federation protocol of Ishtaria worlds.
 | `schemas/federation-agreement.schema.json` | JSON Schema of a bilateral federation agreement |
 | `schemas/travel-ticket.cddl` | CDDL of the signed (COSE_Sign1) travel ticket |
 | `schemas/server-info.schema.json` | `/.well-known/ishtaria/server.json` (identity key, API URL, federation policy) |
-| `schemas/portal-invitation.schema.json` | Payload of a signed, single-use portal invitation code |
-| `schemas/portal-pact-accept.schema.json` | Signed acceptance sent between worlds when an invitation is accepted |
-| `schemas/portal-pact-status.schema.json` | Signed message that an end of the portal is built or the pact is closed |
+| `schemas/portal-link.schema.json` | Payload of the share link of a finished portal |
+| `schemas/portal-link-request.schema.json` | Signed request to link a portal, sent to the world named by a pasted link |
+| `schemas/portal-unlink.schema.json` | Signed message that the owner of an end broke the link |
+| `schemas/datadisk.schema.json` | JSON Schema definitions for story datadisk files (manifest, places, NPCs, dialogue trees, quests, lore, strings) |
 | `examples/` | Example agreements and messages |
 
 ```sh
 python3 tests/validate_examples.py
+python3 tests/validate_datadisk.py [--allow-draft] [DISK_DIR ...]   # schema + reference checks, several dirs = one composition
 ```
 
 The prose specification is in the [documentation](https://vitexsoftware.github.io/ishtaria-docs/federation/index.html). Package `ishtaria-protocol` installs the schemas to `/usr/share/ishtaria/protocol/`.
