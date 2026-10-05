@@ -1,0 +1,8 @@
+{
+  "protocol": 1,
+  "server_name": "svet-a.example.org",
+  "api_url": "https://svet-a.example.org:7400",
+  "public_key": "ed25519:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+  "ruleset": "core-rules@1.0",
+  "federation_policy": "approve"
+}

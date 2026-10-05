@@ -48,7 +48,7 @@
             "cosmetics": { "type": "boolean", "default": true },
             "skills": { "enum": ["map", "reset", "keep"], "default": "reset" },
             "items": { "$ref": "#/$defs/item_policy" },
-            "currency": { "enum": ["exchange", "deny"], "default": "deny" }
+            "currency": { "enum": ["count", "exchange", "deny"], "default": "deny", "description": "count: gold coins (inventory items) cross one for one, bounded by the item import limits; exchange: converted by an exchange office (not implemented); deny: coins stay at the border." }
           }
         },
         "export": {
@@ -84,7 +84,7 @@
       "pattern": "^([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)(\\.[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)+$"
     },
     "category": {
-      "enum": ["raw_material", "food", "tool", "weapon", "clothing", "cosmetic", "building", "currency", "quest_item", "legendary"]
+      "enum": ["raw_material", "food", "tool", "weapon", "armor", "shield", "consumable", "container", "valuable", "key", "document", "remains", "animal", "misc", "clothing", "cosmetic", "building", "currency", "quest_item", "legendary"]
     },
     "item_policy": {
       "type": "object",

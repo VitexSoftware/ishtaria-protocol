@@ -1,0 +1,12 @@
+{
+  "v": 1,
+  "type": "portal-pact-accept",
+  "invitation": "0192f3a1-5b1e-7c3a-9d4e-1a2b3c4d5e6f",
+  "from_world": "svet-b.example.org",
+  "from_player": "anna",
+  "to_world": "svet-a.example.org",
+  "portal": "brana-jih",
+  "issued": 1791135600,
+  "expires": 1791135900,
+  "from_api_url": "https://svet-b.example.org:7400"
+}

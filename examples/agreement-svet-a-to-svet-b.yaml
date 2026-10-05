@@ -16,10 +16,10 @@ federation_agreement:
     cosmetics: true
     skills: map
     items:
-      allow_categories: [raw_material, tool, food]
-      deny_categories: [currency, legendary]
+      allow_categories: [raw_material, tool, food, currency]
+      deny_categories: [legendary]
       daily_limit_per_player: 50
-    currency: exchange
+    currency: count
 
   export:
     items:

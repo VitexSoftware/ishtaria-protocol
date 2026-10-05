@@ -35,4 +35,21 @@ for path in sorted((root / "examples").glob("agreement-*.yaml")):
         print(f"{path.name}: {'/'.join(map(str, e.path))}: {e.message}")
     if not errors:
         print(f"{path.name}: OK")
+for prefix, schema_name in [
+    ("server-info-", "server-info"),
+    ("portal-invitation-", "portal-invitation"),
+    ("portal-pact-accept-", "portal-pact-accept"),
+    ("portal-pact-status-", "portal-pact-status"),
+]:
+    json_schema = json.loads((root / f"schemas/{schema_name}.schema.json").read_text())
+    json_validator = jsonschema.Draft202012Validator(
+        json_schema, format_checker=jsonschema.FormatChecker()
+    )
+    for path in sorted((root / "examples").glob(f"{prefix}*.json")):
+        errors = list(json_validator.iter_errors(json.loads(path.read_text())))
+        for e in errors:
+            failed = True
+            print(f"{path.name}: {'/'.join(map(str, e.path))}: {e.message}")
+        if not errors:
+            print(f"{path.name}: OK")
 sys.exit(1 if failed else 0)

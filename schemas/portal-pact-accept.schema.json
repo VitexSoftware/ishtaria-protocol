@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://vitexsoftware.github.io/ishtaria-protocol/schemas/portal-pact-accept.schema.json",
+  "title": "Portal pact acceptance payload",
+  "description": "Sent by the invited player's world to the inviting world as {\"message\": \"<payload>.<signature>\"} to POST /federation/pacts. Signature is Ed25519 over 'ishtaria/portal-pact-accept/v1' + 0x00 + the decoded payload, made with the sender world's key.",
+  "type": "object",
+  "required": [
+    "v",
+    "type",
+    "invitation",
+    "from_world",
+    "from_api_url",
+    "from_player",
+    "to_world",
+    "portal",
+    "issued",
+    "expires"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "v": {
+      "const": 1
+    },
+    "type": {
+      "const": "portal-pact-accept"
+    },
+    "invitation": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "from_world": {
+      "type": "string",
+      "pattern": "^[a-z0-9]([a-z0-9.-]{0,251}[a-z0-9])?$",
+      "description": "DNS name of a world (its permanent identity)."
+    },
+    "from_player": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 32,
+      "description": "Account name (localpart) on the issuing world."
+    },
+    "to_world": {
+      "type": "string",
+      "pattern": "^[a-z0-9]([a-z0-9.-]{0,251}[a-z0-9])?$",
+      "description": "DNS name of a world (its permanent identity)."
+    },
+    "portal": {
+      "type": "string",
+      "pattern": "^[a-z0-9-]{1,64}$"
+    },
+    "issued": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "expires": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "from_api_url": {
+      "type": "string",
+      "pattern": "^https?://[^\\s/?#@\\\\]+(/[^\\s?#@\\\\]*)?$",
+      "maxLength": 300,
+      "description": "Public API URL of the sending world, used to fetch its server key on first contact."
+    }
+  }
+}

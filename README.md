@@ -6,7 +6,11 @@ Federation protocol of Ishtaria worlds.
 |---|---|
 | `schemas/federation-agreement.schema.json` | JSON Schema of a bilateral federation agreement |
 | `schemas/travel-ticket.cddl` | CDDL of the signed (COSE_Sign1) travel ticket |
-| `examples/` | Example agreements |
+| `schemas/server-info.schema.json` | `/.well-known/ishtaria/server.json` (identity key, API URL, federation policy) |
+| `schemas/portal-invitation.schema.json` | Payload of a signed, single-use portal invitation code |
+| `schemas/portal-pact-accept.schema.json` | Signed acceptance sent between worlds when an invitation is accepted |
+| `schemas/portal-pact-status.schema.json` | Signed message that an end of the portal is built or the pact is closed |
+| `examples/` | Example agreements and messages |
 
 ```sh
 python3 tests/validate_examples.py
