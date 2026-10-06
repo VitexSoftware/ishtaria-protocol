@@ -124,6 +124,9 @@ def check_disk(disk_dir, allow_draft):
                 break
             seen.add(current["parent"])
             current = places.get(current["parent"])
+    for place in places.values():
+        if "music" in place and local(place["music"]) and place["music"] not in music:
+            err(disk_dir / "places", f"{place['id']}: unknown music {place['music']}")
     if sum(1 for place in places.values() if place.get("spawn")) > 1:
         err(disk_dir / "places", "at most one place may be the spawn point")
     for npc in npcs.values():
@@ -231,6 +234,29 @@ def check_disk(disk_dir, allow_draft):
                         ref, stage = effect["set_stage"]["quest"], effect["set_stage"]["stage"]
                         if local(ref) and (ref not in quests or stage not in quests[ref]["stages"]):
                             err(path, f"unknown quest stage {ref}/{stage}")
+
+    # Spoken lines: voice/voices.yaml (tool settings) and media/voice/<language>/<text_key>.ogg recordings.
+    spoken = {n["text_key"] for d in dialogues.values() for n in d["nodes"].values() if "text_key" in n}
+    voices_path = disk_dir / "voice" / "voices.yaml"
+    if voices_path.is_file():
+        voices = load(voices_path)
+        if validate("voices", voices_path, voices):
+            for language in voices["models"]:
+                if language not in languages:
+                    err(voices_path, f"model for undeclared language {language}")
+            for npc_id in voices.get("npcs", {}):
+                if npc_id not in npcs:
+                    err(voices_path, f"unknown npc {npc_id}")
+    voice_dir = disk_dir / "media" / "voice"
+    for file in sorted(voice_dir.glob("*/*")) if voice_dir.is_dir() else []:
+        language, name = file.parent.name, file.name
+        where = file.relative_to(disk_dir)
+        if language not in languages:
+            err(where, f"recording in undeclared language {language}")
+        elif not name.endswith(".ogg") or name[:-4] not in spoken:
+            err(where, "not named after a text key shown by a dialogue node (<text_key>.ogg)")
+        elif file.stat().st_size > 2 << 20:
+            err(where, "larger than 2 MiB")
 
     unused = {k for table in strings.values() for k in table} - used
     summary = {

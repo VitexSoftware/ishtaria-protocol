@@ -10,6 +10,7 @@ Federation protocol of Ishtaria worlds.
 | `schemas/portal-link.schema.json` | Payload of the share link of a finished portal |
 | `schemas/portal-link-request.schema.json` | Signed request to link a portal, sent to the world named by a pasted link |
 | `schemas/portal-unlink.schema.json` | Signed message that the owner of an end broke the link |
+| `DATADISK-SPEC.md` | Specification of the story datadisk format (layout, languages, spoken lines, how to create a disk) |
 | `schemas/datadisk.schema.json` | JSON Schema definitions for story datadisk files (manifest, places, NPCs, dialogue trees, quests, lore, strings) |
 | `examples/` | Example agreements and messages |
 

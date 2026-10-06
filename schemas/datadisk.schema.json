@@ -73,12 +73,20 @@
           "minLength": 1,
           "maxLength": 1000
         },
+        "format": {
+          "description": "Datadisk format version this disk follows (DATADISK-SPEC.md); 1 when absent.",
+          "const": 1
+        },
         "rating": {
           "enum": [
             "general",
             "teen",
             "mature"
           ]
+        },
+        "cover": {
+          "description": "Cover image (png or jpg, at most 1 MiB) that clients show when they connect to a server using the disk.",
+          "$ref": "#/$defs/media_path"
         },
         "languages": {
           "type": "array",
@@ -401,6 +409,16 @@
               }
             }
           },
+          "music": {
+            "$ref": "#/$defs/local_id",
+            "description": "Track (id from music/*.yaml) that plays in the background while the player is within music_radius_m of the place."
+          },
+          "music_radius_m": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "maximum": 5000,
+            "description": "Distance from the place within which its music is heard (fades towards the edge); defaults to radius_m."
+          },
           "spawn": {
             "type": "boolean",
             "description": "New characters of the world appear here. At most one place of a disk; with several disks the first one in the order of application wins."
@@ -449,6 +467,11 @@
               "skin": {
                 "type": "string",
                 "pattern": "^[A-Za-z0-9_-]{1,48}$"
+              },
+              "model": {
+                "description": "A glTF binary below media/models/ (<= 4 MiB) drawn instead of the pack character; pack and skin stay the fallback.",
+                "type": "string",
+                "pattern": "^media/models/[a-z0-9_]+\\.glb$"
               }
             }
           },
@@ -721,7 +744,7 @@
     "media_path": {
       "description": "Path of a file inside the datadisk, below media/ (png, jpg or ogg).",
       "type": "string",
-      "pattern": "^media/[a-z0-9_]+(/[a-z0-9_]+)*/[a-z0-9_.-]+\\.(png|jpg|ogg)$"
+      "pattern": "^media/[a-z0-9_]+(/[a-z0-9_]+)*/[a-z0-9_.-]+\\.(png|jpg|ogg|glb)$"
     },
     "music": {
       "description": "music/*.yaml: tracks (OGG Vorbis) a dialogue can play.",
@@ -748,6 +771,69 @@
             "type": "boolean"
           }
         }
+      }
+    },
+    "voices": {
+      "description": "voice/voices.yaml: how the build tool (render_voices.py) synthesizes the spoken lines. Not read by the server: the server only serves media/voice/<language>/<text_key>.ogg. A recording at that path always replaces a synthetic line.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "models"
+      ],
+      "properties": {
+        "models": {
+          "description": "Piper model per language (two lowercase letters).",
+          "type": "object",
+          "propertyNames": {
+            "pattern": "^[a-z]{2}$"
+          },
+          "additionalProperties": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_.-]+$"
+          }
+        },
+        "placeholders": {
+          "description": "What a recording says for a placeholder of the texts, per language: {player} (the name the player chose) is replaced by this form of address. A text key `<key>.say` in i18n replaces the whole text for the voice.",
+          "type": "object",
+          "properties": {
+            "player": {
+              "type": "object",
+              "propertyNames": {
+                "pattern": "^[a-z]{2}$"
+              },
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        "default": {
+          "$ref": "#/$defs/voice_profile"
+        },
+        "npcs": {
+          "description": "Per NPC id: a voice profile, plus optional per-language overrides keyed by language.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/voice_profile"
+          }
+        }
+      }
+    },
+    "voice_profile": {
+      "type": "object",
+      "properties": {
+        "length_scale": {"type": "number", "exclusiveMinimum": 0, "maximum": 3},
+        "noise_scale": {"type": "number", "minimum": 0, "maximum": 2},
+        "noise_w": {"type": "number", "minimum": 0, "maximum": 2},
+        "pitch": {"description": "Semitones.", "type": "number", "minimum": -12, "maximum": 12},
+        "tempo": {"type": "number", "minimum": 0.5, "maximum": 2},
+        "speaker": {"description": "Speaker id of a multi-speaker model.", "type": "integer", "minimum": 0},
+        "eq": {"enum": ["bass", "bright", "muffled"]},
+        "echo": {"enum": ["crypt", "hall"]}
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/voice_profile"
       }
     }
   }

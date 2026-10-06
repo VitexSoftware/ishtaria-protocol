@@ -1,0 +1,4 @@
+models: {en: en_US-libritts_r-medium}
+default: {pitch: 0}
+npcs:
+  hermit: {pitch: -3, length_scale: 1.1}
