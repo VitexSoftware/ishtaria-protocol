@@ -428,7 +428,7 @@
               "gate",
               "alley"
             ],
-            "description": "Fixes the place to a spot of its parent's walled town: the main gate (just inside the wall) or the back alley beside it. Requires a parent with the town preset and size town."
+            "description": "Fixes the place to a spot of its parent's walled town: the main gate (just inside the wall) or a back alley far from it, out of the gate guard's sight and hearing. Requires a parent with the town preset and size town."
           }
         }
       }
