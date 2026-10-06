@@ -422,6 +422,13 @@
           "spawn": {
             "type": "boolean",
             "description": "New characters of the world appear here. At most one place of a disk; with several disks the first one in the order of application wins."
+          },
+          "at": {
+            "enum": [
+              "gate",
+              "alley"
+            ],
+            "description": "Fixes the place to a spot of its parent's walled town: the main gate (just inside the wall) or the back alley beside it. Requires a parent with the town preset and size town."
           }
         }
       }
@@ -647,6 +654,10 @@
         "start_stage": {
           "$ref": "#/$defs/local_id"
         },
+        "start_place": {
+          "description": "Place where the quest begins; the aetherglass compass shows it as the next story point until the quest is started.",
+          "$ref": "#/$defs/ref"
+        },
         "stages": {
           "type": "object",
           "minProperties": 1,
@@ -666,6 +677,10 @@
               },
               "final": {
                 "type": "boolean"
+              },
+              "guide": {
+                "description": "Place the aetherglass compass points to during this stage (defaults to the reach place).",
+                "$ref": "#/$defs/ref"
               },
               "reach": {
                 "description": "Moves the quest to stage `goto` when the player comes within radius_m of the place.",
@@ -807,6 +822,18 @@
             }
           },
           "additionalProperties": false
+        },
+        "loudness": {
+          "description": "Integrated loudness of the spoken lines in LUFS per language (two lowercase letters); `default` applies to the other languages. The lines of a language are normalised to it; human recordings are not touched.",
+          "type": "object",
+          "propertyNames": {
+            "pattern": "^([a-z]{2}|default)$"
+          },
+          "additionalProperties": {
+            "type": "number",
+            "minimum": -70,
+            "maximum": 0
+          }
         },
         "default": {
           "$ref": "#/$defs/voice_profile"

@@ -46,8 +46,9 @@ Content ids and the ruleset version are stable contracts: an incompatible change
 ## 4. Content
 
 * **Places** may be placed by constraints (biome, height, slope, distance to other places) and are persisted
-  once; one place may be the `spawn` point. **NPCs** stand at a place, choose a character model and name a
-  dialogue. **Quests** are stage machines (`reach` stages advance when the player arrives).
+  once; one place may be the `spawn` point; a child place of a walled town (`size: town`) may be pinned with `at: gate` or `at: alley`. **NPCs** stand at a place, choose a character model and name a
+  dialogue. **Quests** are stage machines (`reach` stages advance when the player arrives). A quest may name a
+  `start_place` and a stage a `guide` place; the server shows them as markers once the player holds the aetherglass.
 * **Dialogues** are trees: a node shows a `text_key` with `choices`, or is a `branch` (automatic routing,
   last entry unconditional). Conditions (`flag`, `quest_stage`, `has_item`, `gold_at_least`, `all/any/not`)
   and effects (gold, items, flags, quest stages, `once`) are structured data, never scripts. The server applies
